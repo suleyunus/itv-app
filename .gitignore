@@ -62,3 +62,6 @@ typings/
 
 # sequelize configuration
 server/config
+
+# sequelize seeds
+server/seeders
