@@ -1,5 +1,5 @@
-require('dotenv').config()
 const http = require('http');
+const winston = require('winston');
 const app = require('../app');
 
 const normalizePort = (val) => {
@@ -26,11 +26,11 @@ const errorHandler = (error) => {
   const bind = typeof address === 'string' ? `pipe ${address}` : `port: ${port}`;
   switch (error.code) {
     case 'EACCES':
-      console.error(`${bind} requires elevated privileges.`);
+      winston.log('info', (`${bind} requires elevated privileges.`));
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(`${bind} is already in use.`);
+      winston.log('info', (`${bind} is already in use.`));
       process.exit(1);
       break;
     default:
@@ -42,7 +42,7 @@ server.on('error', errorHandler);
 server.on('listening', () => {
   const address = server.address();
   const bind = typeof address === 'string' ? `pipe ${address}` : `port ${port}`;
-  console.log(`Listening on ${bind}`);
+  winston.log('info', (`Listening on ${bind}`));
 });
 
 server.listen(port);
