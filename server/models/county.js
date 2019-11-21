@@ -1,18 +1,24 @@
-module.exports = (sequelize, DataTypes) => {
-  const County = sequelize.define('County', {
-    county: {
-      type: DataTypes.STRING,
+module.exports = {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('Counties', {
+    id: {
       allowNull: false,
-      validate: {
-        notNull: {
-          msg: 'County must have a value',
-        },
-      },
+      autoIncrement: true,
+      primaryKey: true,
+      type: Sequelize.INTEGER,
     },
-  }, {});
+    county: {
+      allowNull: false,
+      type: Sequelize.STRING,
+    },
+    createdAt: {
+      allowNull: false,
+      type: Sequelize.DATE,
+    },
+    updatedAt: {
+      allowNull: false,
+      type: Sequelize.DATE,
+    },
+  }),
   // eslint-disable-next-line no-unused-vars
-  County.associate = (models) => {
-    // associations can be defined here
-  };
-  return County;
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('Counties'),
 };

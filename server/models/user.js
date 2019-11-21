@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
-    first_name: {
+    firstName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
     },
-    last_name: {
+    lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -63,26 +63,26 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     bio: DataTypes.STRING,
-    avatar_url: DataTypes.STRING,
-    type_id: {
+    avatarUrl: DataTypes.STRING,
+    typeId: {
       type: DataTypes.INTEGER,
       references: {
         model: 'Type',
         key: 'id',
-        as: 'type_id',
+        as: 'typeId',
       },
     },
-    site_admin: {
+    siteAdmin: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
-    last_login: DataTypes.DATE,
+    lastLogin: DataTypes.DATE,
   }, {});
   // eslint-disable-next-line no-unused-vars
   User.associate = (models) => {
     // associations can be defined here
-    User.belongsTo(models.Type, { foreignKey: 'type_id', onDelete: 'CASCADE' });
+    User.belongsTo(models.Type, { foreignKey: 'typeId', onDelete: 'CASCADE' });
   };
   return User;
 };

@@ -1,14 +1,14 @@
 module.exports = (sequelize, DataTypes) => {
   const CreatorProfile = sequelize.define('CreatorProfile', {
-    user_id: {
+    userId: {
       type: DataTypes.INTEGER,
       references: {
         model: 'User',
         key: 'id',
-        as: 'user_id',
+        as: 'userId',
       },
     },
-    stage_name: {
+    stageName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
     },
-    urban_center_id: {
+    urbanCenterId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
@@ -28,10 +28,10 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'UrbanCenter',
         key: 'id',
-        as: 'urban_center_id',
+        as: 'urbanCenterId',
       },
     },
-    major_skill_id: {
+    majorSkillId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
@@ -42,10 +42,10 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'Skill',
         key: 'id',
-        as: 'major_skill_id',
+        as: 'majorSkillId',
       },
     },
-    minor_skill_id: {
+    minorSkillId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
@@ -56,10 +56,10 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'Skill',
         key: 'id',
-        as: 'minor_skill_id',
+        as: 'minorSkillId',
       },
     },
-    agree_to_license: {
+    agreeToLicense: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
@@ -75,10 +75,10 @@ module.exports = (sequelize, DataTypes) => {
   // eslint-disable-next-line no-unused-vars
   CreatorProfile.associate = (models) => {
     // associations can be defined here
-    CreatorProfile.belongsTo(models.UrbanCenter, { foreignKey: 'urban_center_id', onDelete: 'CASCADE' });
-    CreatorProfile.belongsTo(models.User, { foreignKey: 'user_id', onDelete: 'CASCADE' });
-    CreatorProfile.belongsTo(models.Skill, { foreignKey: 'major_skill_id', onDelete: 'CASCADE' });
-    CreatorProfile.belongsTo(models.Skill, { foreignKey: 'minor_skill_id', onDelete: 'CASCADE' });
+    CreatorProfile.belongsTo(models.UrbanCenter, { foreignKey: 'urbanCenterId', onDelete: 'CASCADE' });
+    CreatorProfile.belongsTo(models.User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+    CreatorProfile.belongsTo(models.Skill, { foreignKey: 'majorSkillId', onDelete: 'CASCADE' });
+    CreatorProfile.belongsTo(models.Skill, { foreignKey: 'minorSkillId', onDelete: 'CASCADE' });
   };
   return CreatorProfile;
 };

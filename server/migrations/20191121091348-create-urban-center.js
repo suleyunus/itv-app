@@ -6,11 +6,11 @@ module.exports = {
       primaryKey: true,
       type: Sequelize.INTEGER,
     },
-    urban_center: {
+    urbanCenter: {
       allowNull: false,
       type: Sequelize.STRING,
     },
-    county_id: {
+    countyId: {
       type: Sequelize.INTEGER,
       onDelete: 'CASCADE',
       references: {
