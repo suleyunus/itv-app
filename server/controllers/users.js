@@ -59,7 +59,7 @@ exports.creatorSignup = asyncMiddleware(async (req, res) => {
 
   const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: 60 * 60 * 24 * 7 });
 
-  res.status(201).send({
+  return res.status(201).send({
     status: 'success',
     message: 'Creator successfully created',
     data: {
@@ -99,7 +99,7 @@ exports.login = asyncMiddleware(async (req, res) => {
 
   const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: 60 * 60 * 24 * 7 });
 
-  res.status(200).send({
+  return res.status(200).send({
     status: 'success',
     data: {
       token,

@@ -6,7 +6,7 @@ module.exports = {
       primaryKey: true,
       type: Sequelize.INTEGER,
     },
-    type: {
+    accountType: {
       allowNull: false,
       type: Sequelize.STRING,
     },

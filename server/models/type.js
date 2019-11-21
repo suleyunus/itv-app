@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const Type = sequelize.define('Type', {
-    type: {
+    accountType: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {

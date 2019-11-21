@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: {
         args: true,
-        msg: 'Email address already exists'
+        msg: 'Email address already exists',
       },
       validate: {
         notNull: {
@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: {
         args: true,
-        msg: 'Phone number already exists'
+        msg: 'Phone number already exists',
       },
       validate: {
         notNull: {
