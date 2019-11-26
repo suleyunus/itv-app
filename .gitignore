@@ -65,3 +65,5 @@ server/config
 
 # sequelize seeds
 server/seeders
+
+sendgrid.env
