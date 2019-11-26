@@ -6,46 +6,46 @@ module.exports = {
       primaryKey: true,
       type: Sequelize.INTEGER,
     },
-    user_id: {
+    userId: {
       type: Sequelize.INTEGER,
       references: {
         model: 'Users',
         key: 'id',
-        as: 'user_id',
+        as: 'userId',
       },
     },
-    stage_name: {
+    stageName: {
       allowNull: false,
       type: Sequelize.STRING,
     },
-    urban_center_id: {
+    urbanCenterId: {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
         model: 'UrbanCenters',
         key: 'id',
-        as: 'urban_center_id',
+        as: 'urbanCenterId',
       },
     },
-    major_skill_id: {
+    majorSkillId: {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
         model: 'Skills',
         key: 'id',
-        as: 'major_skill_id',
+        as: 'majorSkillId',
       },
     },
-    minor_skill_id: {
+    minorSkillId: {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
         model: 'Skills',
         key: 'id',
-        as: 'minor_skill_id',
+        as: 'minorSkillId',
       },
     },
-    agree_to_license: {
+    agreeToLicense: {
       allowNull: false,
       defaultValue: false,
       type: Sequelize.BOOLEAN,

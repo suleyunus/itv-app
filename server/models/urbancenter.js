@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const UrbanCenter = sequelize.define('UrbanCenter', {
-    urban_center: {
+    urbanCenter: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -9,19 +9,19 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
     },
-    county_id: {
+    countyId: {
       type: DataTypes.INTEGER,
       references: {
         model: 'County',
         key: 'id',
-        as: 'county_id',
+        as: 'countyId',
       },
     },
   }, {});
   // eslint-disable-next-line no-unused-vars
   UrbanCenter.associate = (models) => {
     // associations can be defined here
-    UrbanCenter.belongsTo(models.County, { foreignKey: 'county_id', onDelete: 'CASCADE' });
+    UrbanCenter.belongsTo(models.County, { foreignKey: 'countyId', onDelete: 'CASCADE' });
   };
   return UrbanCenter;
 };

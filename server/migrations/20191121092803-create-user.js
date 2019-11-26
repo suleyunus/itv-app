@@ -6,11 +6,11 @@ module.exports = {
       primaryKey: true,
       type: Sequelize.INTEGER,
     },
-    first_name: {
+    firstName: {
       allowNull: false,
       type: Sequelize.STRING,
     },
-    last_name: {
+    lastName: {
       allowNull: false,
       type: Sequelize.STRING,
     },
@@ -31,24 +31,24 @@ module.exports = {
     bio: {
       type: Sequelize.STRING,
     },
-    avatar_url: {
+    avatarUrl: {
       type: Sequelize.STRING,
     },
-    type_id: {
+    typeId: {
       type: Sequelize.INTEGER,
       onDelete: 'CASCADE',
       references: {
         model: 'Types',
         key: 'id',
-        as: 'type_id',
+        as: 'typeId',
       },
     },
-    site_admin: {
+    siteAdmin: {
       allowNull: false,
       defaultValue: false,
       type: Sequelize.BOOLEAN,
     },
-    last_login: {
+    lastLogin: {
       type: Sequelize.DATE,
     },
     createdAt: {

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 const chaiHttp = require('chai-http');
 
 const chai = require('chai');

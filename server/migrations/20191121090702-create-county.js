@@ -1,3 +1,4 @@
+
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Counties', {
     id: {
@@ -7,7 +8,6 @@ module.exports = {
       type: Sequelize.INTEGER,
     },
     county: {
-      allowNull: false,
       type: Sequelize.STRING,
     },
     createdAt: {

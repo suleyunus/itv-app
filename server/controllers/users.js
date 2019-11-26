@@ -29,42 +29,42 @@ exports.creatorSignup = asyncMiddleware(async (req, res) => {
 
   const newUser = await User
     .create({
-      first_name: firstName,
-      last_name: lastName,
+      firstName,
+      lastName,
       email,
       phone,
       password: hashedPassword,
-      type_id: 1,
-      site_admin: false,
+      typeId: 1,
+      siteAdmin: false,
     });
 
   const newCreator = await CreatorProfile
     .create({
-      user_id: newUser.id,
-      stage_name: stageName,
-      urban_center_id: urbanCenter,
-      major_skill_id: majorSkill,
-      minor_skill_id: minorSkill,
-      agree_to_license: agreeToLicense,
+      userId: newUser.id,
+      stageName,
+      urbanCenterId: urbanCenter,
+      majorSkillId: majorSkill,
+      minorSkillId: minorSkill,
+      agreeToLicense,
     });
 
   const payload = {
-    id: newUser.id,
-    first_name: firstName,
-    last_name: lastName,
-    type_id: 1,
-    site_admin: false,
-    creator_profile_id: newCreator.id,
+    userId: newUser.id,
+    firstName: newUser.firstName,
+    lastName: newUser.lastName,
+    typeId: newUser.typeId,
+    siteAdmin: newUser.siteAdmin,
+    creatorProfileId: newCreator.id,
   };
 
   const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: 60 * 60 * 24 * 7 });
 
-  res.status(201).send({
+  return res.status(201).send({
     status: 'success',
     message: 'Creator successfully created',
     data: {
       token,
-      id: newUser.id,
+      userId: newUser.id,
     },
   });
 });
@@ -90,20 +90,20 @@ exports.login = asyncMiddleware(async (req, res) => {
   }
 
   const payload = {
-    id: user.id,
-    first_name: user.first_name,
-    last_name: user.last_name,
-    type_id: user.type_id,
-    site_admin: user.site_admin,
+    userId: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    typeId: user.typeId,
+    siteAdmin: user.siteAdmin,
   };
 
-  const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: 60 * 60 * 24 * 7 });
+  const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '7d' });
 
-  res.status(200).send({
+  return res.status(200).send({
     status: 'success',
     data: {
       token,
-      id: user.id,
+      userId: user.id,
     },
   });
 });
