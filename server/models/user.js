@@ -83,7 +83,12 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = (models) => {
     // associations can be defined here
     User.belongsTo(models.Type, { foreignKey: 'typeId', onDelete: 'CASCADE' });
-    User.belongsToMany(models.Group, { through: models.GroupMember, foreignKey: 'userId', onDelete: 'CASCADE' });
+    User.belongsToMany(models.Group, {
+      through: models.GroupMember,
+      as: 'members',
+      foreignKey: 'userId',
+      onDelete: 'CASCADE',
+    });
   };
   return User;
 };

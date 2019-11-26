@@ -9,6 +9,12 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
     },
+    about: {
+      type: DataTypes.STRING,
+    },
+    groupAvatar: {
+      type: DataTypes.STRING,
+    },
     createdBy: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -31,7 +37,12 @@ module.exports = (sequelize, DataTypes) => {
   // eslint-disable-next-line no-unused-vars
   Group.associate = (models) => {
     // associations can be defined here
-    Group.belongsToMany(models.User, { through: models.GroupMember, foreignKey: 'userId', onDelete: 'CASCADE' });
+    Group.belongsToMany(models.User, {
+      through: models.GroupMember,
+      as: 'members',
+      foreignKey: 'groupId',
+      onDelete: 'CASCADE',
+    });
   };
   return Group;
 };

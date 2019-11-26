@@ -10,6 +10,12 @@ module.exports = {
       allowNull: false,
       type: Sequelize.STRING,
     },
+    about: {
+      type: Sequelize.STRING,
+    },
+    groupAvatar: {
+      type: Sequelize.STRING,
+    },
     createdBy: {
       allowNull: false,
       type: Sequelize.INTEGER,

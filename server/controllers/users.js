@@ -49,7 +49,7 @@ exports.creatorSignup = asyncMiddleware(async (req, res) => {
     });
 
   const payload = {
-    id: newUser.id,
+    userId: newUser.id,
     firstName: newUser.firstName,
     lastName: newUser.lastName,
     typeId: newUser.typeId,
@@ -64,7 +64,7 @@ exports.creatorSignup = asyncMiddleware(async (req, res) => {
     message: 'Creator successfully created',
     data: {
       token,
-      id: newUser.id,
+      userId: newUser.id,
     },
   });
 });
@@ -90,20 +90,20 @@ exports.login = asyncMiddleware(async (req, res) => {
   }
 
   const payload = {
-    id: user.id,
+    userId: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
     typeId: user.typeId,
     siteAdmin: user.siteAdmin,
   };
 
-  const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: 60 * 60 * 24 * 7 });
+  const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '7d' });
 
   return res.status(200).send({
     status: 'success',
     data: {
       token,
-      id: user.id,
+      userId: user.id,
     },
   });
 });
