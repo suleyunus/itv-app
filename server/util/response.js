@@ -1,8 +1,8 @@
 class Responses {
-  static HTTP_200_OK(data, res) {
+  static HTTP_200_OK(message, res) {
     return res.status(200).json({
       status: 'Success',
-      data,
+      message,
     });
   }
 

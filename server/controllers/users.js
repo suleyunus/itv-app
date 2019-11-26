@@ -2,8 +2,14 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Sequelize = require('sequelize');
+const sgMail = require('@sendgrid/mail');
 const model = require('../models');
 const asyncMiddleware = require('../middlewares/async');
+const Response = require('../util/response');
+
+const myKey = process.env.SENDGRID_API_KEY;
+
+sgMail.setApiKey(myKey);
 
 const { Op } = Sequelize;
 
@@ -82,6 +88,10 @@ exports.login = asyncMiddleware(async (req, res) => {
       },
     });
 
+  if (!user) {
+    return Response.HTTP_404_NOT_FOUND('Cannot find your account', res);
+  }
+
   if (!bcrypt.compareSync(password, user.password)) {
     return res.status(400).send({
       status: 'Error',
@@ -106,4 +116,108 @@ exports.login = asyncMiddleware(async (req, res) => {
       userId: user.id,
     },
   });
+});
+
+
+exports.passwordReset = asyncMiddleware(async (req, res) => {
+  const {
+    email,
+  } = req.body;
+
+  const user = await User
+    .findOne({
+      where: {
+        email,
+      },
+    });
+
+  if (!user) {
+    return Response.HTTP_404_NOT_FOUND('Cannot find your account', res);
+  }
+
+  const payload = {
+    id: user.id,
+    email,
+  };
+
+  const secret = `${user.password}-${user.createdAt}`;
+
+  const token = jwt.sign(payload, secret, { expiresIn: '0.25h' });
+
+  const msg = {
+    to: email,
+    from: 'test@example.com',
+    subject: 'Password Reset',
+    html: `Go to the following link to reset your password: 
+      ${req.protocol}://${req.hostname}/api/v1/auth/password/reset/confirm/${token}/`,
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  await sgMail.send(msg);
+
+  return Response.HTTP_200_OK('Password reset email sent successfully', res);
+});
+
+
+exports.passwordResetConfirm = asyncMiddleware(async (req, res) => {
+  const {
+    id,
+    token,
+    password,
+    confirmPassword,
+  } = req.body;
+
+  const user = await User
+    .findByPk(id);
+
+  if (!user) {
+    return Response.HTTP_404_NOT_FOUND('Cannot find your account', res);
+  }
+
+  const secret = `${user.password}-${user.createdAt}`;
+  // eslint-disable-next-line no-unused-vars
+  const decoded = await jwt.verify(token, secret);
+
+  if (password !== confirmPassword) {
+    return Response.HTTP_400_BAD_REQUEST('Passwords must match', res);
+  }
+
+  const hashedPassword = bcrypt.hashSync(password, SALT_ROUNDS);
+
+  // eslint-disable-next-line no-unused-vars
+  const resetPassword = await user
+    .update({
+      password: hashedPassword,
+    });
+
+  return Response.HTTP_200_OK('Your password has been successfully reset', res);
+});
+
+
+exports.changePassword = asyncMiddleware(async (req, res) => {
+  const {
+    newPassword,
+    confirmNewPassword,
+    oldPassword,
+  } = req.body;
+
+  const user = await User
+    .findByPk(req.user.id);
+
+  if (!bcrypt.compareSync(oldPassword, user.password)) {
+    return Response.HTTP_400_BAD_REQUEST('Verification of old password failed', res);
+  }
+
+  if (newPassword !== confirmNewPassword) {
+    return Response.HTTP_400_BAD_REQUEST('Passwords must match', res);
+  }
+
+  const hashedPassword = bcrypt.hashSync(newPassword, SALT_ROUNDS);
+  // eslint-disable-next-line no-unused-vars
+  const changedPassword = await user
+    .update({
+      password: hashedPassword,
+    });
+
+  return Response.HTTP_200_OK('Your password has been successfully changed', res);
 });
