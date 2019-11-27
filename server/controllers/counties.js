@@ -10,7 +10,12 @@ const { County } = model;
 
 exports.getCounties = asyncMiddleware(async (req, res) => {
   const data = await County
-    .findAll();
+    .findAll({
+      attributes: [
+        'id',
+        'county',
+      ],
+    });
 
   return Response.HTTP_200_OK(data, res);
 });

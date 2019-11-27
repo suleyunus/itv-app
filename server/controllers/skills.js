@@ -10,7 +10,12 @@ const { Skill } = model;
 
 exports.getSkill = asyncMiddleware(async (req, res) => {
   const data = await Skill
-    .findAll();
+    .findAll({
+      attributes: [
+        'id',
+        'skill',
+      ],
+    });
 
   return Response.HTTP_200_OK(data, res);
 });
