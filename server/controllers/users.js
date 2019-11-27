@@ -297,7 +297,7 @@ exports.getUserById = asyncMiddleware(async (req, res) => {
             model: Skill,
             attributes: [
               'id',
-              'Skill',
+              'skill',
             ],
             as: 'majorSkill',
           },
@@ -305,7 +305,7 @@ exports.getUserById = asyncMiddleware(async (req, res) => {
             model: Skill,
             attributes: [
               'id',
-              'Skill',
+              'skill',
             ],
             as: 'minorSkill',
           },
@@ -313,7 +313,7 @@ exports.getUserById = asyncMiddleware(async (req, res) => {
             model: UrbanCenter,
             attributes: [
               'id',
-              'UrbanCenter',
+              'urbanCenter',
             ],
           },
         ],

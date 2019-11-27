@@ -11,7 +11,12 @@ const { UrbanCenter } = model;
 exports.getUrbanCenters = asyncMiddleware(async (req, res) => {
   if (Object.keys(req.query).length === 0) {
     const data = await UrbanCenter
-      .findAll();
+      .findAll({
+        attributes: [
+          'id',
+          'urbanCenter',
+        ],
+      });
 
     return Response.HTTP_200_OK(data, res);
   }
@@ -27,7 +32,11 @@ exports.getUrbanCenters = asyncMiddleware(async (req, res) => {
       where: {
         countyId,
       },
+      attributes: [
+        'id',
+        'urbanCenter',
+      ],
     });
 
-  return Response.HTTP_200_OK(data, res);   
+  return Response.HTTP_200_OK(data, res);
 });
