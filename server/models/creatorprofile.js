@@ -76,9 +76,9 @@ module.exports = (sequelize, DataTypes) => {
   CreatorProfile.associate = (models) => {
     // associations can be defined here
     CreatorProfile.belongsTo(models.UrbanCenter, { foreignKey: 'urbanCenterId', onDelete: 'CASCADE' });
-    CreatorProfile.belongsTo(models.User, { foreignKey: 'userId', onDelete: 'CASCADE' });
-    CreatorProfile.belongsTo(models.Skill, { foreignKey: 'majorSkillId', onDelete: 'CASCADE' });
-    CreatorProfile.belongsTo(models.Skill, { foreignKey: 'minorSkillId', onDelete: 'CASCADE' });
+    CreatorProfile.belongsTo(models.User, { foreignKey: 'userId', onDelete: 'CASCADE', as: 'userProfile' });
+    CreatorProfile.belongsTo(models.Skill, { foreignKey: 'majorSkillId', onDelete: 'CASCADE', as: 'majorSkill' });
+    CreatorProfile.belongsTo(models.Skill, { foreignKey: 'minorSkillId', onDelete: 'CASCADE', as: 'minorSkill' });
   };
   return CreatorProfile;
 };

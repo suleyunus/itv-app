@@ -82,7 +82,7 @@ module.exports = (sequelize, DataTypes) => {
   // eslint-disable-next-line no-unused-vars
   User.associate = (models) => {
     // associations can be defined here
-    User.belongsTo(models.Type, { foreignKey: 'typeId', onDelete: 'CASCADE' });
+    User.belongsTo(models.Type, { foreignKey: 'typeId', onDelete: 'CASCADE', as: 'type' });
     User.belongsToMany(models.Group, {
       through: models.GroupMember,
       as: 'members',

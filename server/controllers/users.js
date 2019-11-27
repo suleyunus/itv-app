@@ -13,7 +13,13 @@ sgMail.setApiKey(myKey);
 
 const { Op } = Sequelize;
 
-const { User, CreatorProfile } = model;
+const {
+  User,
+  CreatorProfile,
+  Skill,
+  UrbanCenter,
+  Type,
+} = model;
 
 const SALT_ROUNDS = 10;
 
@@ -220,4 +226,101 @@ exports.changePassword = asyncMiddleware(async (req, res) => {
     });
 
   return Response.HTTP_200_OK('Your password has been successfully changed', res);
+});
+
+exports.getUserById = asyncMiddleware(async (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+
+  const user = await User
+    .findOne({
+      where: {
+        id: userId,
+      },
+      attributes: [
+        'id',
+        'firstName',
+        'lastName',
+        'email',
+        'phone',
+        'bio',
+        'avatarUrl',
+        'typeId',
+        'siteAdmin',
+        'lastLogin',
+        'createdAt',
+        'updatedAt',
+      ],
+    });
+
+  if (!user) {
+    return Response.HTTP_404_NOT_FOUND(`User with id: ${userId} not found`, res);
+  }
+
+  if (user.typeId === 1) {
+    const data = await CreatorProfile
+      .findOne({
+        where: {
+          userId,
+        },
+        attributes: [
+          'userId',
+          'stageName',
+        ],
+        include: [
+          {
+            model: User,
+            attributes: [
+              'id',
+              'firstName',
+              'lastName',
+              'email',
+              'phone',
+              'bio',
+              'avatarUrl',
+              'siteAdmin',
+              'lastLogin',
+              'createdAt',
+              'updatedAt',
+            ],
+            as: 'userProfile',
+            include: [
+              {
+                model: Type,
+                attributes: [
+                  'type',
+                ],
+                as: 'type',
+              },
+            ],
+          },
+          {
+            model: Skill,
+            attributes: [
+              'id',
+              'Skill',
+            ],
+            as: 'majorSkill',
+          },
+          {
+            model: Skill,
+            attributes: [
+              'id',
+              'Skill',
+            ],
+            as: 'minorSkill',
+          },
+          {
+            model: UrbanCenter,
+            attributes: [
+              'id',
+              'UrbanCenter',
+            ],
+          },
+        ],
+      });
+
+    return Response.HTTP_200_OK(data, res);
+  }
+
+  return Response.HTTP_200_OK(user, res);
 });
