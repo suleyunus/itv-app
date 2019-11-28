@@ -42,16 +42,14 @@ exports.createGroup = asyncMiddleware(async (req, res) => {
       },
       include: [{
         model: User,
-        through: {
-          attributes: [
-            'id',
-            'firstName',
-            'lastName',
-            'bio',
-            'avatarUrl',
-            'lastLogin',
-          ],
-        },
+        attributes: [
+          'id',
+          'firstName',
+          'lastName',
+          'bio',
+          'avatarUrl',
+          'lastLogin',
+        ],
         as: 'members',
       }],
     });
@@ -198,25 +196,29 @@ exports.listMembersInGroup = asyncMiddleware(async (req, res) => {
     return Response.HTTP_404_NOT_FOUND(`Group with Id: ${groupId} does not exist`, res);
   }
 
-  const data = await Group
-    .findAll({
-      where: {
-        id: groupId,
-      },
-      attributes: [],
-      include: [{
-        model: User,
-        attributes: [
-          'id',
-          'firstName',
-          'lastName',
-          'bio',
-          'avatarUrl',
-          'lastLogin',
-        ],
-        as: 'members',
-      }],
-    });
+  const data = await model.sequelize.query(
+    `SELECT 
+    "u"."id" as "userId",
+    "u"."firstName",
+    "u"."lastName",
+    "u"."bio",
+    "u"."avatarUrl",
+    "u"."lastLogin",
+    "m"."groupAdmin",
+    "m"."createdAt",
+    "m"."updatedAt"
+FROM
+    "Users" u,
+    "GroupMembers" m,
+    "Groups" g
+WHERE
+    "m"."userId" = "u"."id"
+    AND "m"."groupId" = "g"."id"
+    AND "m"."groupId" = ${groupId};`,
+    {
+      type: model.sequelize.QueryTypes.SELECT,
+    },
+  );
 
   return Response.HTTP_200_OK(data, res);
 });
@@ -247,28 +249,31 @@ exports.getMemberInGroup = asyncMiddleware(async (req, res) => {
     return Response.HTTP_404_NOT_FOUND(`Member with Id: ${memberId} does not exist`, res);
   }
 
-  const data = await Group
-    .findAll({
-      where: {
-        id: groupId,
-      },
-      attributes: [],
-      include: [{
-        model: User,
-        where: {
-          id: memberId,
-        },
-        attributes: [
-          'id',
-          'firstName',
-          'lastName',
-          'bio',
-          'avatarUrl',
-          'lastLogin',
-        ],
-        as: 'members',
-      }],
-    });
+  const data = await model.sequelize.query(
+    `SELECT 
+    "u"."id" as "userId",
+    "u"."firstName",
+    "u"."lastName",
+    "u"."bio",
+    "u"."avatarUrl",
+    "u"."lastLogin",
+    "m"."groupAdmin",
+    "m"."createdAt",
+    "m"."updatedAt"
+FROM
+    "Users" u,
+    "GroupMembers" m,
+    "Groups" g
+WHERE
+    "m"."userId" = "u"."id"
+    AND "m"."groupId" = "g"."id"
+    AND "m"."groupId" = ${groupId}
+    AND "m"."userId" = ${memberId}
+    ;`,
+    {
+      type: model.sequelize.QueryTypes.SELECT,
+    },
+  );
 
   return Response.HTTP_200_OK(data, res);
 });
