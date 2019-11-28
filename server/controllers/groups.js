@@ -111,7 +111,11 @@ exports.updateGroupById = asyncMiddleware(async (req, res) => {
       groupAvatar: req.body.groupAvatar || group.groupAvatar,
     });
 
-  return Response.HTTP_200_OK(updatedGroup, res);
+  return res.status(200).send({
+    status: 'Success',
+    message: 'Group updated successfully',
+    data: updatedGroup,
+  });
 });
 
 
