@@ -155,13 +155,16 @@ exports.passwordReset = asyncMiddleware(async (req, res) => {
     from: 'test@example.com',
     subject: 'Password Reset',
     html: `Go to the following link to reset your password: 
-      ${req.protocol}://${req.hostname}/api/v1/auth/password/reset/confirm/${token}/`,
+      ${req.protocol}://${req.hostname}/api/v1/auth/password/reset/confirm/${user.id}/${token}/`,
   };
 
   // eslint-disable-next-line no-unused-vars
   await sgMail.send(msg);
 
-  return Response.HTTP_200_OK('Password reset email sent successfully', res);
+  return res.status(200).send({
+    status: 'Success',
+    message: 'Password reset email has been sent successfully',
+  });
 });
 
 
@@ -196,7 +199,10 @@ exports.passwordResetConfirm = asyncMiddleware(async (req, res) => {
       password: hashedPassword,
     });
 
-  return Response.HTTP_200_OK('Your password has been successfully reset', res);
+  return res.status(200).send({
+    status: 'Success',
+    message: 'Your password has been successfully reset',
+  });
 });
 
 
@@ -220,7 +226,11 @@ exports.changePassword = asyncMiddleware(async (req, res) => {
       password: hashedPassword,
     });
 
-  return Response.HTTP_200_OK('Your password has been successfully changed', res);
+  return res.status(200).send({
+    status: 'Success',
+    message: 'Your password has been successfully changed',
+
+  });
 });
 
 exports.getUserById = asyncMiddleware(async (req, res) => {

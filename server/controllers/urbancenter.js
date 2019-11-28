@@ -35,6 +35,7 @@ exports.getUrbanCenters = asyncMiddleware(async (req, res) => {
       attributes: [
         'id',
         'urbanCenter',
+        'countyId',
       ],
     });
 

@@ -44,7 +44,14 @@ exports.createGroup = asyncMiddleware(async (req, res) => {
         model: User,
         required: false,
         through: {
-          attributes: [],
+          attributes: [
+            'id',
+            'firstName',
+            'lastName',
+            'bio',
+            'avatarUrl',
+            'lastLogin',
+          ],
         },
         as: 'members',
       }],
@@ -83,6 +90,7 @@ exports.getGroupById = asyncMiddleware(async (req, res) => {
           'lastName',
           'bio',
           'avatarUrl',
+          'lastLogin',
         ],
         as: 'members',
       }],
@@ -111,7 +119,11 @@ exports.updateGroupById = asyncMiddleware(async (req, res) => {
       groupAvatar: req.body.groupAvatar || group.groupAvatar,
     });
 
-  return Response.HTTP_200_OK(updatedGroup, res);
+  return res.status(200).send({
+    status: 'Success',
+    message: 'Group updated successfully',
+    data: updatedGroup,
+  });
 });
 
 
@@ -201,6 +213,7 @@ exports.listMembersInGroup = asyncMiddleware(async (req, res) => {
           'lastName',
           'bio',
           'avatarUrl',
+          'lastLogin',
         ],
         as: 'members',
       }],
@@ -252,6 +265,7 @@ exports.getMemberInGroup = asyncMiddleware(async (req, res) => {
           'lastName',
           'bio',
           'avatarUrl',
+          'lastLogin',
         ],
         as: 'members',
       }],
