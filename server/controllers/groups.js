@@ -198,7 +198,7 @@ exports.listMembersInGroup = asyncMiddleware(async (req, res) => {
 
   const data = await model.sequelize.query(
     `SELECT 
-    "u"."id" as "userId",
+    "u"."id",
     "u"."firstName",
     "u"."lastName",
     "u"."bio",
@@ -251,7 +251,7 @@ exports.getMemberInGroup = asyncMiddleware(async (req, res) => {
 
   const data = await model.sequelize.query(
     `SELECT 
-    "u"."id" as "userId",
+    "u"."id",
     "u"."firstName",
     "u"."lastName",
     "u"."bio",
