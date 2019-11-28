@@ -42,7 +42,6 @@ exports.createGroup = asyncMiddleware(async (req, res) => {
       },
       include: [{
         model: User,
-        required: false,
         through: {
           attributes: [
             'id',
