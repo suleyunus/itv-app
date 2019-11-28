@@ -42,16 +42,14 @@ exports.createGroup = asyncMiddleware(async (req, res) => {
       },
       include: [{
         model: User,
-        through: {
-          attributes: [
-            'id',
-            'firstName',
-            'lastName',
-            'bio',
-            'avatarUrl',
-            'lastLogin',
-          ],
-        },
+        attributes: [
+          'id',
+          'firstName',
+          'lastName',
+          'bio',
+          'avatarUrl',
+          'lastLogin',
+        ],
         as: 'members',
       }],
     });
