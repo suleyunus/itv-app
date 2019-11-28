@@ -203,7 +203,6 @@ exports.passwordResetConfirm = asyncMiddleware(async (req, res) => {
 exports.changePassword = asyncMiddleware(async (req, res) => {
   const {
     newPassword,
-    confirmNewPassword,
     oldPassword,
   } = req.body;
 
@@ -212,10 +211,6 @@ exports.changePassword = asyncMiddleware(async (req, res) => {
 
   if (!bcrypt.compareSync(oldPassword, user.password)) {
     return Response.HTTP_400_BAD_REQUEST('Verification of old password failed', res);
-  }
-
-  if (newPassword !== confirmNewPassword) {
-    return Response.HTTP_400_BAD_REQUEST('Passwords must match', res);
   }
 
   const hashedPassword = bcrypt.hashSync(newPassword, SALT_ROUNDS);
