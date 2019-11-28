@@ -155,7 +155,7 @@ exports.passwordReset = asyncMiddleware(async (req, res) => {
     from: 'test@example.com',
     subject: 'Password Reset',
     html: `Go to the following link to reset your password: 
-      http://41.212.80.190/imaratv/reset.php/${user.id}/${token}/`,
+      http://41.212.80.190/imaratv/reset.php?id=${user.id}&token=${token}/`,
   };
 
   // eslint-disable-next-line no-unused-vars
