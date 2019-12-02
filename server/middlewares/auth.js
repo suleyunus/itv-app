@@ -1,9 +1,11 @@
 /* eslint-disable consistent-return */
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const sequelize = require('sequelize');
 const model = require('../models');
 
-const { User } = model;
+const { Op } = sequelize;
+const { User, Group, GroupMember } = model;
 
 const Auth = {
   /**
@@ -37,6 +39,117 @@ const Auth = {
     } catch (error) {
       return res.status(400).send(error);
     }
+  },
+
+  async verifyGroupMember(req, res, next) {
+    const groupId = parseInt(req.params.groupId, 10);
+    const group = await Group
+      .findOne({
+        where: {
+          id: groupId,
+        },
+      });
+
+    if (!group) {
+      return res.status(400).send({
+        status: 'Error',
+        message: `Group with Id: ${groupId} not found`,
+      });
+    }
+
+    const groupMember = await GroupMember
+      .findOne({
+        where: {
+          [Op.and]: [{ groupId }, { userId: req.user.id }],
+        },
+      });
+
+    if (!groupMember) {
+      return res.status(400).send({
+        status: 'Error',
+        message: 'You need to be a member of this group',
+      });
+    }
+    next();
+  },
+
+  async verifyGroupAdmin(req, res, next) {
+    const groupId = parseInt(req.params.groupId, 10);
+    const group = await Group
+      .findOne({
+        where: {
+          id: groupId,
+        },
+      });
+
+    if (!group) {
+      return res.status(400).send({
+        status: 'Error',
+        message: `Group with Id: ${groupId} not found`,
+      });
+    }
+
+    const groupMember = await GroupMember
+      .findOne({
+        where: {
+          [Op.and]: [{ groupId }, { userId: req.user.id }],
+        },
+      });
+
+    if (!groupMember) {
+      return res.status(400).send({
+        status: 'Error',
+        message: 'You need to be a member of this group',
+      });
+    }
+
+    if (groupMember.groupAdmin !== true) {
+      return res.status(400).send({
+        status: 'Error',
+        message: 'You need to be an admin of this group',
+      });
+    }
+    next();
+  },
+
+  async verifyOwnerOrAdmin(req, res, next) {
+    const groupId = parseInt(req.params.groupId, 10);
+    const memberId = parseInt(req.params.memberId, 10);
+    const group = await Group
+      .findOne({
+        where: {
+          id: groupId,
+        },
+      });
+
+    if (!group) {
+      return res.status(400).send({
+        status: 'Error',
+        message: `Group with Id: ${groupId} not found`,
+      });
+    }
+
+    const groupMember = await GroupMember
+      .findOne({
+        where: {
+          [Op.and]: [{ groupId }, { userId: req.user.id }],
+        },
+      });
+
+    if (!groupMember) {
+      return res.status(400).send({
+        status: 'Error',
+        message: 'You need to be a member of this group',
+      });
+    }
+
+    if (groupMember.groupAdmin !== true && memberId !== req.user.id) {
+      return res.status(400).send({
+        status: 'Error',
+        message: 'You do not have the required permissions',
+      });
+    }
+    next();
   },
 };
 
