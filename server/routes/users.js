@@ -13,8 +13,8 @@ router.post('/auth/password/reset', Validator(scheme.resetPasswordSchema, 'body'
 router.post('/auth/password/reset/done', Validator(scheme.passwordResetDoneSchema, 'body'), controllers.passwordResetConfirm);
 router.post('/auth/password/change', Auth.verifyToken, Validator(scheme.changePasswordSchema, 'body'), controllers.changePassword);
 router.get('/users/:userId', Validator(scheme.getUserSchema, 'params'), Auth.verifyToken, controllers.getUserById);
-router.patch('/users/:userId/avatars', Auth.verifyToken, multerUploads.multerUploads, controllers.updateUserAvatar);
-router.delete('/users/:userId/avatars', Auth.verifyToken, multerUploads.multerUploads, controllers.deleteUserAvatar);
-router.patch('/creators/:creatorId', Auth.verifyToken, Validator(scheme.updateCreatorProfileSchema, 'body'), controllers.updateCreatorDetails);
+router.patch('/users/:userId/avatars', Auth.verifyToken, Auth.verifyOwner, multerUploads.multerUploads, controllers.updateUserAvatar);
+router.delete('/users/:userId/avatars', Auth.verifyToken, Auth.verifyOwner, controllers.deleteUserAvatar);
+router.patch('/creators/:creatorId', Auth.verifyToken, Auth.verifyOwner, Validator(scheme.updateCreatorProfileSchema, 'body'), controllers.updateCreatorDetails);
 
 module.exports = router;
