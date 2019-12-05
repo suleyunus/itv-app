@@ -15,6 +15,6 @@ router.post('/auth/password/change', Auth.verifyToken, Validator(scheme.changePa
 router.get('/users/:userId', Validator(scheme.getUserSchema, 'params'), Auth.verifyToken, controllers.getUserById);
 router.patch('/users/:userId/avatars', Auth.verifyToken, Auth.verifyOwner, multerUploads.multerUploads, controllers.updateUserAvatar);
 router.delete('/users/:userId/avatars', Auth.verifyToken, Auth.verifyOwner, controllers.deleteUserAvatar);
-router.patch('/creators/:creatorId', Auth.verifyToken, Auth.verifyOwner, Validator(scheme.updateCreatorProfileSchema, 'body'), controllers.updateCreatorDetails);
+router.patch('/creators/:userId', Auth.verifyToken, Auth.verifyOwner, Validator(scheme.updateCreatorProfileSchema, 'body'), controllers.updateCreatorDetails);
 
 module.exports = router;
