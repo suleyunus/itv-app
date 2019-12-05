@@ -5,7 +5,7 @@ exports.createGroupSchema = Joi.object({
     .required()
     .messages({
       'string.base': 'Invalid type, name must be a string',
-      'string.empty': 'Please provide a group name',
+      'string.empty': 'Name cannot be empty',
       'any.required': 'Name is a required field',
     }),
 });
@@ -16,7 +16,7 @@ exports.getGroupByIdSchema = Joi.object({
     .required()
     .messages({
       'number.base': 'Invalid type, groupId must be an integer',
-      'number.empty': 'groupId is required',
+      'number.empty': 'groupId cannot be empty',
       'any.required': 'groupId is a required field',
     }),
 });
@@ -27,7 +27,7 @@ exports.getMemberById = Joi.object({
     .required()
     .messages({
       'number.base': 'Invalid type, groupId must be an integer',
-      'number.empty': 'groupId is required',
+      'number.empty': 'groupId cannot be empty',
       'any.required': 'groupId is a required field',
     }),
   memberId: Joi.number()
@@ -35,7 +35,36 @@ exports.getMemberById = Joi.object({
     .required()
     .messages({
       'number.base': 'Invalid type, memberId must be an integer',
-      'number.empty': 'memberId is required',
+      'number.empty': 'memberId cannot be empty',
       'any.required': 'memberId is a required field',
+    }),
+});
+
+exports.updateGroupSchema = Joi.object({
+  name: Joi.string()
+    .strict()
+    .trim()
+    .messages({
+      'string.base': 'Invalid type, name must be a string',
+      'string.empty': 'name cannot be empty',
+      'string.trim': 'Name must not have leading or trailing whitespace',
+    }),
+  bio: Joi.string()
+    .strict()
+    .trim()
+    .messages({
+      'string.base': 'Invalid type, bio must be a string',
+      'string.empty': 'bio cannot be empty',
+      'string.trim': 'Name must not have leading or trailing whitespace',
+    }),
+});
+
+exports.assignAdminPrivilegesSchema = Joi.object({
+  groupAdmin: Joi.boolean()
+    .required()
+    .messages({
+      'boolean.base': 'Invalid type, groupAdmin must be a boolean',
+      'boolean.empty': 'groupAdmin cannot be empty',
+      'any.required': 'groupAdmin is a required field',
     }),
 });

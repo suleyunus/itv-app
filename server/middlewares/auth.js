@@ -41,6 +41,19 @@ const Auth = {
     }
   },
 
+  async verifyOwner(req, res, next) {
+    const userId = parseInt(req.params.userId, 10);
+
+    if (req.user.id !== userId) {
+      return res.status(400).send({
+        status: 'Error',
+        message: 'You do not have the required permissions',
+      });
+    }
+
+    next();
+  },
+
   async verifyGroupMember(req, res, next) {
     const groupId = parseInt(req.params.groupId, 10);
     const group = await Group
@@ -67,7 +80,7 @@ const Auth = {
     if (!groupMember) {
       return res.status(400).send({
         status: 'Error',
-        message: 'You need to be a member of this group',
+        message: 'You do not have the required permissions',
       });
     }
     next();
@@ -99,14 +112,14 @@ const Auth = {
     if (!groupMember) {
       return res.status(400).send({
         status: 'Error',
-        message: 'You need to be a member of this group',
+        message: 'You do not have the required permissions',
       });
     }
 
     if (groupMember.groupAdmin !== true) {
       return res.status(400).send({
         status: 'Error',
-        message: 'You need to be an admin of this group',
+        message: 'You do not have the required permissions',
       });
     }
     next();
@@ -139,7 +152,7 @@ const Auth = {
     if (!groupMember) {
       return res.status(400).send({
         status: 'Error',
-        message: 'You need to be a member of this group',
+        message: 'You do not have the required permissions',
       });
     }
 

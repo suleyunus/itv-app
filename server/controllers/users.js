@@ -3,9 +3,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Sequelize = require('sequelize');
 const sgMail = require('@sendgrid/mail');
-// const { resolve } = require('path');
-// const DataUri = require('datauri');
-// const path = require('path');
 const model = require('../models');
 const asyncMiddleware = require('../middlewares/async');
 const Response = require('../util/response');
@@ -380,7 +377,7 @@ exports.updateUserAvatar = asyncMiddleware(async (req, res) => {
 
   const data = {
     userId: updatedUserProfile.id,
-    avatarurl: updatedUserProfile.avatarUrl,
+    avatarUrl: updatedUserProfile.avatarUrl,
   };
 
   return res.status(200).send({

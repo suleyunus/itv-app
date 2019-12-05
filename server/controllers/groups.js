@@ -2,6 +2,8 @@ const Sequelize = require('sequelize');
 const model = require('../models');
 const asyncMiddleware = require('../middlewares/async');
 const Response = require('../util/response');
+const { uploader } = require('../config/cloudinaryConfig');
+const { dataUri } = require('../middlewares/multer');
 
 const { Op } = Sequelize;
 
@@ -113,7 +115,6 @@ exports.updateGroupById = asyncMiddleware(async (req, res) => {
     .update({
       name: req.body.name || group.name,
       about: req.body.about || group.about,
-      groupAvatar: req.body.groupAvatar || group.groupAvatar,
     });
 
   return res.status(200).send({
@@ -316,4 +317,167 @@ exports.deleteMemberInGroup = asyncMiddleware(async (req, res) => {
     status: 'Success',
     message: 'Member deleted successfully',
   });
+});
+
+
+/**
+ * Assign or revoke admin privileges to member in group with id
+ */
+
+exports.makeMemberAdminInGroup = asyncMiddleware(async (req, res) => {
+  const groupId = parseInt(req.params.groupId, 10);
+  const userId = parseInt(req.params.memberId, 10);
+  const group = await Group
+    .findByPk(groupId);
+
+  if (!group) {
+    return Response.HTTP_404_NOT_FOUND(`Group with Id: ${groupId} does not exist`, res);
+  }
+
+  const member = await GroupMember
+    .findOne({
+      where: {
+        [Op.and]: [{ groupId }, { userId }],
+      },
+    });
+
+  if (!member) {
+    return Response.HTTP_404_NOT_FOUND(`Member with Id: ${userId} does not exist`, res);
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  const updateMember = await member
+    .update({
+      groupAdmin: req.body.groupAdmin || member.groupAdmin,
+    });
+
+  const data = await model.sequelize.query(
+    `SELECT 
+      "u"."id",
+      "u"."firstName",
+      "u"."lastName",
+      "u"."bio",
+      "u"."avatarUrl",
+      "u"."lastLogin",
+      "m"."groupAdmin",
+      "m"."createdAt",
+      "m"."updatedAt"
+  FROM
+      "Users" u,
+      "GroupMembers" m,
+      "Groups" g
+  WHERE
+      "m"."userId" = "u"."id"
+      AND "m"."groupId" = "g"."id"
+      AND "m"."groupId" = ${groupId}
+      AND "m"."userId" = ${userId}
+      ;`,
+    {
+      type: model.sequelize.QueryTypes.SELECT,
+    },
+  );
+
+  return res.status(200).send({
+    status: 'Success',
+    message: 'Member permissions updated successfully',
+    data,
+  });
+});
+
+
+/**
+ * Update group avatar
+ */
+
+exports.updateGroupAvatar = asyncMiddleware(async (req, res) => {
+  const groupId = parseInt(req.params.groupId, 10);
+  const foundGroup = await Group
+    .findOne({
+      where: {
+        id: groupId,
+      },
+    });
+
+  if (!foundGroup) {
+    return Response.HTTP_404_NOT_FOUND(`Group with id: ${groupId}`, res);
+  }
+
+  const avatar = req.file;
+  const file = dataUri(avatar);
+
+  const newAvatar = await uploader.upload(
+    file,
+    {
+      use_filename: true,
+      folder: 'avatars/groups',
+    },
+  );
+
+  const {
+    groupAvatar,
+  } = foundGroup;
+
+  if (groupAvatar) {
+    const splitUrl = groupAvatar.split('/');
+    // eslint-disable-next-line camelcase
+    const public_id = `${splitUrl[7]}/${splitUrl[8]}/${splitUrl[9].split('.')[0]}`;
+    // eslint-disable-next-line no-unused-vars
+    const deleteAvatar = await uploader.destroy(public_id);
+  }
+
+  const updatedGroupProfile = await foundGroup
+    .update({
+      groupAvatar: newAvatar.url || groupAvatar,
+    });
+
+  const data = {
+    groupId: updatedGroupProfile.id,
+    avatarUrl: updatedGroupProfile.groupAvatar,
+  };
+
+  return res.status(200).send({
+    status: 'Success',
+    message: 'Avatar updated successfully',
+    data,
+  });
+});
+
+/**
+ * Delete group avatar
+ */
+
+exports.deleteGroupAvatar = asyncMiddleware(async (req, res) => {
+  const groupId = parseInt(req.params.groupId, 10);
+  const foundGroup = await Group
+    . findOne({
+      where: {
+        id: groupId,
+      },
+    });
+
+  if (!foundGroup) {
+    return Response.HTTP_404_NOT_FOUND(`Group with id: ${groupId} not found`, res);
+  }
+
+  const {
+    groupAvatar,
+  } = foundGroup;
+
+  if (!groupAvatar) {
+    return Response.HTTP_404_NOT_FOUND('There is no image to delete', res);
+  }
+
+  const splitUrl = groupAvatar.split('/');
+  // eslint-disable-next-line camelcase
+  const public_id = `${splitUrl[7]}/${splitUrl[8]}/${splitUrl[9].split('.')[0]}`;
+  // eslint-disable-next-line no-unused-vars
+  const deleteAvatar = await uploader.destroy(public_id);
+
+  // eslint-disable-next-line no-unused-vars
+  const updatedGroup = await foundGroup
+    .update({
+      groupAvatar: null,
+    });
+
+  return Response.HTTP_200_OK('Avatar deleted successfully', res);
 });
