@@ -47,15 +47,15 @@ exports.updateGroupSchema = Joi.object({
     .messages({
       'string.base': 'Invalid type, name must be a string',
       'string.empty': 'name cannot be empty',
-      'string.trim': 'Name must not have leading or trailing whitespace',
+      'string.trim': 'name must not have leading or trailing whitespace',
     }),
-  bio: Joi.string()
+  about: Joi.string()
     .strict()
     .trim()
     .messages({
-      'string.base': 'Invalid type, bio must be a string',
-      'string.empty': 'bio cannot be empty',
-      'string.trim': 'Name must not have leading or trailing whitespace',
+      'string.base': 'Invalid type, about must be a string',
+      'string.empty': 'about cannot be empty',
+      'string.trim': 'about must not have leading or trailing whitespace',
     }),
 });
 
