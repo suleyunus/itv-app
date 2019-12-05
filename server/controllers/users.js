@@ -3,14 +3,20 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Sequelize = require('sequelize');
 const sgMail = require('@sendgrid/mail');
+// const { resolve } = require('path');
+// const DataUri = require('datauri');
+// const path = require('path');
 const model = require('../models');
 const asyncMiddleware = require('../middlewares/async');
 const Response = require('../util/response');
+const { uploader } = require('../config/cloudinaryConfig');
+const { dataUri } = require('../middlewares/multer');
 
 const myKey = process.env.SENDGRID_API_KEY;
 
 sgMail.setApiKey(myKey);
 
+// const dataUri = new DataUri();
 const { Op } = Sequelize;
 
 const {
@@ -328,4 +334,218 @@ exports.getUserById = asyncMiddleware(async (req, res) => {
   }
 
   return Response.HTTP_200_OK(user, res);
+});
+
+
+/**
+ * Update user avatar
+ */
+
+exports.updateUserAvatar = asyncMiddleware(async (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+  const foundUser = await User
+    . findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+  if (!foundUser) {
+    return Response.HTTP_404_NOT_FOUND('Cannot find your account', res);
+  }
+
+  const avatar = req.file;
+  const file = dataUri(avatar);
+
+  const newAvatar = await uploader.upload(
+    file,
+    {
+      use_filename: true,
+      folder: 'avatars/creators',
+    },
+  );
+
+  if (foundUser.avatarUrl) {
+    const splitUrl = foundUser.avatarUrl.split('/');
+    // eslint-disable-next-line camelcase
+    const public_id = `${splitUrl[7]}/${splitUrl[8]}/${splitUrl[9].split('.')[0]}`;
+    // eslint-disable-next-line no-unused-vars
+    const deleteAvatar = await uploader.destroy(public_id);
+  }
+
+  const updatedUserProfile = await foundUser
+    .update({
+      avatarUrl: newAvatar.url || foundUser.avatarUrl,
+    });
+
+  const data = {
+    userId: updatedUserProfile.id,
+    avatarurl: updatedUserProfile.avatarUrl,
+  };
+
+  return res.status(200).send({
+    status: 'Success',
+    message: 'Avatar updated successfully',
+    data,
+  });
+});
+
+/**
+ * Delete user avatar
+ */
+
+exports.deleteUserAvatar = asyncMiddleware(async (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+  const foundUser = await User
+    . findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+  if (!foundUser) {
+    return Response.HTTP_404_NOT_FOUND('Cannot find your account', res);
+  }
+
+  const {
+    avatarUrl,
+  } = foundUser;
+
+  if (!avatarUrl) {
+    return Response.HTTP_404_NOT_FOUND('There is no image to delete', res);
+  }
+
+  const splitUrl = avatarUrl.split('/');
+  // eslint-disable-next-line camelcase
+  const public_id = `${splitUrl[7]}/${splitUrl[8]}/${splitUrl[9].split('.')[0]}`;
+  // eslint-disable-next-line no-unused-vars
+  const deleteAvatar = await uploader.destroy(public_id);
+
+  // eslint-disable-next-line no-unused-vars
+  const updatedUser = await foundUser
+    .update({
+      avatarUrl: null,
+    });
+
+  return Response.HTTP_200_OK('Avatar deleted successfully', res);
+});
+
+/**
+ * Update creator profile
+ */
+
+exports.updateCreatorDetails = asyncMiddleware(async (req, res) => {
+  const creatorId = parseInt(req.params.creatorId, 10);
+  const foundCreator = await CreatorProfile
+    . findOne({
+      where: {
+        userId: creatorId,
+      },
+    });
+
+  if (!foundCreator) {
+    return Response.HTTP_404_NOT_FOUND('Cannot find your account', res);
+  }
+
+  const {
+    firstName,
+    lastName,
+    stageName,
+    bio,
+    urbanCenter,
+    majorSkill,
+    minorSkill,
+  } = req.body;
+
+  // eslint-disable-next-line no-unused-vars
+  const updatedCreatorDetails = await foundCreator
+    .update({
+      stageName: stageName || foundCreator.stageName,
+      urbanCenterId: urbanCenter || foundCreator.urbanCenterId,
+      majorSkillId: majorSkill || foundCreator.majorSkillId,
+      minorSkill: minorSkill || foundCreator.minorSkillId,
+    });
+
+  const userProfile = await User
+    .findOne({
+      where: {
+        id: creatorId,
+      },
+    });
+
+  // eslint-disable-next-line no-unused-vars
+  const updatedUserProfile = await userProfile
+    .update({
+      firstName: firstName || userProfile.firstName,
+      lastName: lastName || userProfile.lastName,
+      bio: bio || userProfile.bio,
+    });
+
+  const data = await CreatorProfile
+    .findOne({
+      where: {
+        userId: creatorId,
+      },
+      attributes: [
+        'userId',
+        'stageName',
+      ],
+      include: [
+        {
+          model: User,
+          attributes: [
+            'id',
+            'firstName',
+            'lastName',
+            'email',
+            'phone',
+            'bio',
+            'avatarUrl',
+            'siteAdmin',
+            'lastLogin',
+            'createdAt',
+            'updatedAt',
+          ],
+          as: 'userProfile',
+          include: [
+            {
+              model: Type,
+              attributes: [
+                'type',
+              ],
+              as: 'type',
+            },
+          ],
+        },
+        {
+          model: Skill,
+          attributes: [
+            'id',
+            'skill',
+          ],
+          as: 'majorSkill',
+        },
+        {
+          model: Skill,
+          attributes: [
+            'id',
+            'skill',
+          ],
+          as: 'minorSkill',
+        },
+        {
+          model: UrbanCenter,
+          attributes: [
+            'id',
+            'urbanCenter',
+          ],
+        },
+      ],
+    });
+
+  return res.status(200).send({
+    status: 'Success',
+    message: 'Profile updated successfully',
+    data,
+  });
 });
