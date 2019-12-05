@@ -432,7 +432,7 @@ exports.deleteUserAvatar = asyncMiddleware(async (req, res) => {
  */
 
 exports.updateCreatorDetails = asyncMiddleware(async (req, res) => {
-  const creatorId = parseInt(req.params.creatorId, 10);
+  const creatorId = parseInt(req.params.userId, 10);
   const foundCreator = await CreatorProfile
     . findOne({
       where: {
