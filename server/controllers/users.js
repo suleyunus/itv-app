@@ -40,6 +40,61 @@ exports.creatorSignup = asyncMiddleware(async (req, res) => {
     agreeToLicense,
   } = req.body;
 
+  const existingEmail = await User
+    .findOne({
+      where: {
+        email,
+      },
+    });
+
+  if (existingEmail) {
+    return Response.HTTP_400_BAD_REQUEST('Account with that email address exists', res);
+  }
+
+  const existingPhone = await User
+    .findOne({
+      where: {
+        phone,
+      },
+    });
+
+  if (existingPhone) {
+    return Response.HTTP_400_BAD_REQUEST('Account with that phone number exists', res);
+  }
+
+  const existingUrbanCenter = await UrbanCenter
+    .findOne({
+      where: {
+        id: urbanCenter,
+      },
+    });
+
+  if (!existingUrbanCenter) {
+    return Response.HTTP_400_BAD_REQUEST(`No urban center with ID: ${urbanCenter}` , res);
+  }
+
+  const existingMajorSkill = await Skill
+    .findOne({
+      where: {
+        id: majorSkill,
+      },
+    });
+
+  if (!existingMajorSkill) {
+    return Response.HTTP_400_BAD_REQUEST(`No skill with ID: ${majorSkill}`, res);
+  }
+
+  const existingMinorSkill = await Skill
+    .findOne({
+      where: {
+        id: minorSkill,
+      },
+    });
+
+  if (!existingMinorSkill) {
+    return Response.HTTP_400_BAD_REQUEST(`No skill with ID: ${minorSkill}`, res);
+  }
+
   const hashedPassword = bcrypt.hashSync(password, SALT_ROUNDS);
 
   const newUser = await User

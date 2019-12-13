@@ -19,5 +19,6 @@ router.get('/groups/:groupId/members', validate(scheme.getGroupByIdSchema, 'para
 router.get('/groups/:groupId/members/:memberId', validate(scheme.getMemberById, 'params'), auth.verifyToken, auth.verifyGroupMember, controllers.getMemberInGroup);
 router.patch('/groups/:groupId/members/:memberId', auth.verifyToken, auth.verifyGroupAdmin, validate(scheme.assignAdminPrivilegesSchema, 'body'), controllers.makeMemberAdminInGroup);
 router.delete('/groups/:groupId/members/:memberId', validate(scheme.getMemberById, 'params'), auth.verifyToken, auth.verifyOwnerOrAdmin, controllers.deleteMemberInGroup);
+router.get('/creators/:userId/groups', auth.verifyToken, auth.verifyOwner, controllers.getGroupMembershipsForUser);
 
 module.exports = router;

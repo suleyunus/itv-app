@@ -16,14 +16,15 @@ const Auth = {
    * @returns {object|void} response object
    */
   async verifyToken(req, res, next) {
-    const token = req.headers.authorization.split(' ')[1];
-    if (!token) {
+    const getToken = req.headers.authorization;
+    if (!getToken) {
       return res.status(400).send({
         status: 'error',
         message: 'Token is not provided',
       });
     }
     try {
+      const token = req.headers.authorization.split(' ')[1];
       const decoded = await jwt.verify(token, process.env.JWT_KEY);
       const user = await User
         .findOne({
