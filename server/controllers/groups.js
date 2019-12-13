@@ -481,3 +481,46 @@ exports.deleteGroupAvatar = asyncMiddleware(async (req, res) => {
 
   return Response.HTTP_200_OK('Avatar deleted successfully', res);
 });
+
+/**
+ * Get group memberships for user
+ */
+
+exports.getGroupMembershipsForUser = asyncMiddleware(async (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+
+  const foundUser = await User
+    .findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+  if (!foundUser) {
+    return Response.HTTP_404_NOT_FOUND(`User with ID: ${userId} not found`, res);
+  }
+
+  const data = await model.sequelize.query(
+    `SELECT 
+      "g"."id",
+      "g"."name",
+      "g"."about",
+      "g"."groupAvatar",
+      "g"."createdAt",
+      "g"."updatedAt"
+  FROM
+      "Users" u,
+      "GroupMembers" m,
+      "Groups" g
+  WHERE
+      "m"."userId" = "u"."id"
+      AND "m"."groupId" = "g"."id"
+      AND "m"."userId" = ${userId}
+      ;`,
+    {
+      type: model.sequelize.QueryTypes.SELECT,
+    },
+  );
+
+  return Response.HTTP_200_OK(data, res);
+});
